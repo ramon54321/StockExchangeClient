@@ -6353,4 +6353,14 @@ a.text-dark:focus, a.text-dark:hover {
 .invisible {
   visibility: hidden !important; }
 
+html {
+  padding: 1em; }
+
+.row-top-buffer {
+  margin-top: 1em; }
+
+.graph {
+  height: 100%;
+  width: 100%; }
+
 /*# sourceMappingURL=master.css.map */
