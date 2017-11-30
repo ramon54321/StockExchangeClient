@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/home/ramon/node891/bin node
 
 /**
  * Module dependencies.
