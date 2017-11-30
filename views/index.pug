@@ -51,7 +51,7 @@ block content
 
 		function apiTest() {
 			console.log("Test");
-			fetch("http://localhost:5000/api/data/commodities/test/15").then(function(response) {
+			fetch("http://localhost/api/data/commodities/test/15").then(function(response) {
 				response.text().then(function(data) {
 
 					let values = JSON.parse(data);
@@ -81,7 +81,7 @@ block content
 			console.log("Buying");
 			let price = $('#tradePrice').val();
 			let qty = $('#tradeQuantity').val();
-			fetch("http://localhost:5000/api/buy/1/" + price + "/" + qty).then(function(response) {
+			fetch("http://localhost/api/buy/1/" + price + "/" + qty).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
 				});
@@ -91,7 +91,7 @@ block content
 			console.log("Selling");
 			let price = $('#tradePrice').val();
 			let qty = $('#tradeQuantity').val();
-			fetch("http://localhost:5000/api/sell/1/" + price + "/" + qty).then(function(response) {
+			fetch("http://localhost/api/sell/1/" + price + "/" + qty).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
 				});
