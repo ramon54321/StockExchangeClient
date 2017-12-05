@@ -1,0 +1,42 @@
+extends layout
+
+block content
+	div(class="container" style="max-width: 30rem;")
+		div(class="row row-top-buffer")
+			div(class="col")
+				h2 Log In
+		form(id="loginForm")
+			div(class="row row-top-buffer")
+				div(class="col")
+					label Username
+					input(type="text" class="form-control" placeholder="username" id="loginUsername")
+			div(class="row row-top-buffer")
+				div(class="col")
+					label Password
+					input(type="password" class="form-control" placeholder="password" id="loginPassword")
+			div(class="row row-top-buffer")
+				div(class="col")
+					button(type="button" class="btn btn-primary btn-block" onclick="apiLogin()") Log In
+
+	script.
+		function apiLogin() {
+			localStorage.clear();
+			fetch("http://localhost/api/individuals/login", {
+				headers: {
+			      'Content-Type': 'application/json'
+			  },
+				method: 'POST',
+				body: JSON.stringify({
+					username: "bob",
+					password: "anderson"
+				})
+			}).then(function(response) {
+				response.text().then(function(data) {
+					console.log(data);
+					if(data == "invalid")
+						return;
+					localStorage.setItem("userToken", data);
+					window.location = "http://localhost:5000/";
+				});
+			});
+		}

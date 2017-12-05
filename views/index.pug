@@ -1,9 +1,18 @@
 extends layout
 
 block content
-	h1 Stock Exchange Client
-	p Welcome to a simple example client for the Linux based Stock Exchange.
-	div(class="container-fluid")
+	div(class="container")
+		div(class="row")
+			div(class="col-8")
+				h1 Stock Exchange Client
+			div(class="col-4")
+				button(type="button" class="btn btn-danger btn-block" onclick="logOut()") Log Out
+		div(class="row")
+			div(class="col")
+				p Welcome to a simple example client for the Linux based Stock Exchange.
+				p The graph below shows the historic data for the commodity. When a trade is matched, the value of the executed match is recorded at the time of the match. The graphs plots the OCHL chart for the data, meaning it will show the open, close, high and low value of the commodity in the selected time frame.
+				p If you place a few buy and sell offers, and ensure some of them will match, you will see the graph update with the new data. Note, that the close indicator will be the last trade executed for the currect time block.
+				p There will most likely not be any trades in the recent history, and since it is very difficuilt to generate sample data without knowing when the sameple will be accessed, you will need to do a few trades in order to generate a reasonable chart.
 		div(class="row")
 			div(class="graph" id="graph")
 		form(id="tradeForm")
@@ -19,10 +28,16 @@ block content
 					button(type="button" class="btn btn-danger btn-block" onclick="apiBuy()") Buy Offer
 				div(class="col")
 					button(type="button" class="btn btn-danger btn-block" onclick="apiSell()") Sell Offer
-				div(class="col")
-					button(type="button" class="btn btn-info btn-block" onclick="apiTest()") Test
+				//div(class="col")
+					//button(type="button" class="btn btn-info btn-block" onclick="apiTest()") Test
 
 	script.
+		// Check if logged in
+		let userToken = localStorage.getItem("userToken");
+		if(userToken == null) {
+			window.location = "http://localhost:5000/user";
+		}
+
 		function draw() {
 			let graph = document.getElementById('graph');
 			Plotly.plot( graph,
@@ -47,11 +62,16 @@ block content
 				}
 			);
 		}
-		//draw();
+		draw();
+
+		function logOut() {
+			localStorage.clear();
+			window.location = "http://localhost:5000/user";
+		}
 
 		function apiTest() {
 			console.log("Test");
-			fetch("http://stockexchange.ml/api/data/commodities/test/15").then(function(response) {
+			fetch("http://91.152.159.205:59999/api/data/commodities/test/15").then(function(response) {
 				response.text().then(function(data) {
 
 					let values = JSON.parse(data);
@@ -81,7 +101,7 @@ block content
 			console.log("Buying");
 			let price = $('#tradePrice').val();
 			let qty = $('#tradeQuantity').val();
-			fetch("http://stockexchange.ml/api/buy/1/" + price + "/" + qty).then(function(response) {
+			fetch("http://91.152.159.205:59999/api/buy/1/" + price + "/" + qty).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
 				});
@@ -91,7 +111,7 @@ block content
 			console.log("Selling");
 			let price = $('#tradePrice').val();
 			let qty = $('#tradeQuantity').val();
-			fetch("http://stockexchange.ml/api/sell/1/" + price + "/" + qty).then(function(response) {
+			fetch("http://91.152.159.205:59999/api/sell/1/" + price + "/" + qty).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
 				});
