@@ -115,7 +115,7 @@ block content
 
 		function apiGetIndividual() {
 			let query = "http://stockexchange.ml:59999/api/individuals/" + localStorage.getItem("userId");
-			fetch(query).then(function(response) {
+			fetch(query, {mode: 'no-cors'}).then(function(response) {
 				response.text().then(function(data) {
 					let values = JSON.parse(data);
 
@@ -138,7 +138,7 @@ block content
 		function apiGetGraphData() {
 			let comid = $('#commodity').val();
 			console.log("Drawing " + comid);
-			fetch("http://stockexchange.ml:59999/api/data/commodities/" + comid + "/30").then(function(response) {
+			fetch("http://stockexchange.ml:59999/api/data/commodities/" + comid + "/30", {mode: 'no-cors'}).then(function(response) {
 				response.text().then(function(data) {
 					let values = JSON.parse(data);
 					draw(values);
@@ -153,7 +153,8 @@ block content
 			fetch("http://stockexchange.ml:59999/api/buy/" + comid + "/" + price + "/" + qty, {
 				headers: {
 			      'apitoken': localStorage.getItem("userToken")
-			  }
+			  },
+			  mode: 'no-cors'
 			}).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
@@ -168,7 +169,8 @@ block content
 			fetch("http://stockexchange.ml:59999/api/sell/" + comid + "/" + price + "/" + qty, {
 				headers: {
 			      'apitoken': localStorage.getItem("userToken")
-			  }
+			  },
+			  mode: 'no-cors'
 			}).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
