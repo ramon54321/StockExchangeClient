@@ -114,15 +114,17 @@ block content
 				response.text().then(function(data) {
 					let values = JSON.parse(data);
 
-					let total = "<li class='list-group-item list-group-item-action'><div class='row'>";
+					let total = "<li class='list-group-item list-group-item-action'>";
 					for (var i = 0; i < values.exchanges.length; i++) {
 						if(values.exchanges[i].commodityId != $('#commodity').val())
 							continue;
+						total += "<div class='row'>";
 						total += "<div class='col'>" + new Date(values.exchanges[i].date) + "</div>";
 						total += "<div class='col'>" + values.exchanges[i].price + "</div>";
 						total += "<div class='col'>" + values.exchanges[i].quantity + "</div>";
+						total += "</div>";
 					}
-					total += "</div></li>";
+					total += "</li>";
 
 					document.getElementById("exchangesList").innerHTML = total;
 
