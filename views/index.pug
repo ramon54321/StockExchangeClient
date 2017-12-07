@@ -108,14 +108,9 @@ block content
 			apiGetIndividual();
 		}
 
-		//li(class="list-group-item list-group-item-action")
-		//	div(class="col")= res.id
-		//	div(class="col")= res.startDate
-		//	div(class="col")= res.endDate
-
 		function apiGetIndividual() {
 			let query = "http://stockexchange.ml:59999/api/individuals/" + localStorage.getItem("userId");
-			fetch(query, {mode: 'no-cors'}).then(function(response) {
+			fetch(query, {mode: 'cors'}).then(function(response) {
 				response.text().then(function(data) {
 					let values = JSON.parse(data);
 
@@ -138,7 +133,7 @@ block content
 		function apiGetGraphData() {
 			let comid = $('#commodity').val();
 			console.log("Drawing " + comid);
-			fetch("http://stockexchange.ml:59999/api/data/commodities/" + comid + "/30", {mode: 'no-cors'}).then(function(response) {
+			fetch("http://stockexchange.ml:59999/api/data/commodities/" + comid + "/30", {mode: 'cors'}).then(function(response) {
 				response.text().then(function(data) {
 					let values = JSON.parse(data);
 					draw(values);
@@ -154,7 +149,7 @@ block content
 				headers: {
 			      'apitoken': localStorage.getItem("userToken")
 			  },
-			  mode: 'no-cors'
+			  mode: 'cors'
 			}).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
@@ -170,7 +165,7 @@ block content
 				headers: {
 			      'apitoken': localStorage.getItem("userToken")
 			  },
-			  mode: 'no-cors'
+			  mode: 'cors'
 			}).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
