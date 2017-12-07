@@ -10,13 +10,23 @@ block content
 		div(class="row")
 			div(class="col")
 				p Welcome to a simple example client for the Linux based Stock Exchange.
-				p The graph below shows the historic data for the commodity. When a trade is matched, the value of the executed match is recorded at the time of the match. The graphs plots the OCHL chart for the data, meaning it will show the open, close, high and low value of the commodity in the selected time frame.
+				p The graph below shows the historic data for the commodity. When a trade is matched, the value of the executed match is recorded at the time of the match. The graph plots the OCHL chart for the data, meaning it will show the open, close, high and low value of the commodity in the selected time frame.
 				p If you place a few buy and sell offers, and ensure some of them will match, you will see the graph update with the new data. Note, that the close indicator will be the last trade executed for the currect time block.
 				p There will most likely not be any trades in the recent history, and since it is very difficuilt to generate sample data without knowing when the sameple will be accessed, you will need to do a few trades in order to generate a reasonable chart.
 		div(class="row")
+			div(class="col")
+				h3 Trade
+		div(class="row")
 			div(class="graph" id="graph")
 		form(id="tradeForm")
-			div(class="row")
+			div(class="row row-top-buffer")
+				div(class="col")
+					label Commodity
+					select(id="commodity" class="form-control" onchange="switchCommodity()")
+						option(value="0") Gold
+						option(value="1") Silver
+						option(value="2") Oil
+			div(class="row row-top-buffer")
 				div(class="col")
 					label Price
 					input(type="number" step="0.01" class="form-control" id="tradePrice")
@@ -29,28 +39,53 @@ block content
 				div(class="col")
 					button(type="button" class="btn btn-danger btn-block" onclick="apiSell()") Sell Offer
 				//div(class="col")
-					//button(type="button" class="btn btn-info btn-block" onclick="apiTest()") Test
+					//button(type="button" class="btn btn-info btn-block" onclick="apiGetGraphData()") Test
+		div(class="row row-top-buffer")
+			div(class="col")
+				h3 Exchange History
+		div(class="row")
+			div(class="col")
+				ul(class="list-group row-top-buffer")
+					li(class="list-group-item list-group-item-primary")
+						div(class="row")
+							div(class="col") Exchange Date
+							div(class="col") Price
+							div(class="col") Quantity
+					div(id="exchangesList")
+
 
 	script.
 		// Check if logged in
 		let userToken = localStorage.getItem("userToken");
 		if(userToken == null) {
-			window.location = "http://localhost:5000/user";
+			window.location = "http://stockexchange.ml:60000/user";
 		}
+		apiGetGraphData();
+		apiGetIndividual();
+		window.setInterval(function(){
+		  	apiGetGraphData();
+			apiGetIndividual();
+		}, 5000);
 
-		function draw() {
+
+		function draw(values) {
 			let graph = document.getElementById('graph');
+			Plotly.purge(graph);
+			//values = {
+			//	x: ['2017-01-04', '2017-01-05', '2017-01-06', '2017-01-07', '2017-01-08'],
+			//	open: [1, 2, 2.7, 4.5, 7],
+			//	close: [1.6, 2.4, 4, 4.1, 3],
+			//	high: [2.1, 2, 4, 5, 11],
+			//	low: [0.4, 2, 4, 3.2, 1.1],
+			//	increasing: {line: {color: '#2d7fc6'}},
+			//	decreasing: {line: {color: '#ef4545'}},
+			//	type: 'ohlc'
+			//};
+			values.increasing = {line: {color: '#2d7fc6'}};
+			values.decreasing = {line: {color: '#ef4545'}};
+			values.type = 'ohlc';
 			Plotly.plot( graph,
-				[{
-					x: ['2017-01-04', '2017-01-05', '2017-01-06', '2017-01-07', '2017-01-08'],
-					open: [1, 2, 2.7, 4.5, 7],
-					close: [1.6, 2.4, 4, 4.1, 3],
-					high: [2.1, 2, 4, 5, 11],
-					low: [0.4, 2, 4, 3.2, 1.1],
-					increasing: {line: {color: '#2d7fc6'}},
-					decreasing: {line: {color: '#ef4545'}},
-					type: 'ohlc'
-				}],
+				[values],
 				{
 					margin: {
 						r: 0,
@@ -62,46 +97,64 @@ block content
 				}
 			);
 		}
-		draw();
 
 		function logOut() {
 			localStorage.clear();
-			window.location = "http://localhost:5000/user";
+			window.location = "http://stockexchange.ml:60000/user";
 		}
 
-		function apiTest() {
-			console.log("Test");
-			fetch("http://91.152.159.205:59999/api/data/commodities/test/15").then(function(response) {
+		function switchCommodity() {
+			apiGetGraphData();
+			apiGetIndividual();
+		}
+
+		//li(class="list-group-item list-group-item-action")
+		//	div(class="col")= res.id
+		//	div(class="col")= res.startDate
+		//	div(class="col")= res.endDate
+
+		function apiGetIndividual() {
+			let query = "http://stockexchange.ml:59999/api/individuals/" + localStorage.getItem("userId");
+			fetch(query).then(function(response) {
 				response.text().then(function(data) {
-
 					let values = JSON.parse(data);
-					values.increasing = {line: {color: '#2d7fc6'}};
-					values.decreasing = {line: {color: '#ef4545'}};
-					values.type = 'ohlc';
 
-					console.log(values);
+					let total = "<li class='list-group-item list-group-item-action'><div class='row'>";
+					for (var i = 0; i < values.exchanges.length; i++) {
+						if(values.exchanges[i].commodityId != $('#commodity').val())
+							continue;
+						total += "<div class='col'>" + new Date(values.exchanges[i].date) + "</div>";
+						total += "<div class='col'>" + values.exchanges[i].price + "</div>";
+						total += "<div class='col'>" + values.exchanges[i].quantity + "</div>";
+					}
+					total += "</div></li>";
 
-					let graph = document.getElementById('graph');
-					Plotly.plot( graph,
-						[values],
-						{
-							margin: {
-								r: 30,
-								t: 10,
-								b: 10,
-								l: 30
-							},
-							showlegend: false
-						}
-					);
+					document.getElementById("exchangesList").innerHTML = total;
+
+				});
+			});
+		}
+
+		function apiGetGraphData() {
+			let comid = $('#commodity').val();
+			console.log("Drawing " + comid);
+			fetch("http://stockexchange.ml:59999/api/data/commodities/" + comid + "/30").then(function(response) {
+				response.text().then(function(data) {
+					let values = JSON.parse(data);
+					draw(values);
 				});
 			});
 		}
 		function apiBuy() {
 			console.log("Buying");
+			let comid = $('#commodity').val();
 			let price = $('#tradePrice').val();
 			let qty = $('#tradeQuantity').val();
-			fetch("http://91.152.159.205:59999/api/buy/1/" + price + "/" + qty).then(function(response) {
+			fetch("http://stockexchange.ml:59999/api/buy/" + comid + "/" + price + "/" + qty, {
+				headers: {
+			      'apitoken': localStorage.getItem("userToken")
+			  }
+			}).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
 				});
@@ -109,9 +162,14 @@ block content
 		}
 		function apiSell() {
 			console.log("Selling");
+			let comid = $('#commodity').val();
 			let price = $('#tradePrice').val();
 			let qty = $('#tradeQuantity').val();
-			fetch("http://91.152.159.205:59999/api/sell/1/" + price + "/" + qty).then(function(response) {
+			fetch("http://stockexchange.ml:59999/api/sell/" + comid + "/" + price + "/" + qty, {
+				headers: {
+			      'apitoken': localStorage.getItem("userToken")
+			  }
+			}).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
 				});
