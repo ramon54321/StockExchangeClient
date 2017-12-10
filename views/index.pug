@@ -35,9 +35,9 @@ block content
 					input(type="number" step="1" class="form-control" id="tradeQuantity")
 			div(class="row row-top-buffer")
 				div(class="col")
-					button(type="button" class="btn btn-danger btn-block" onclick="apiBuy()") Buy Offer
+					button(type="button" class="btn btn-danger btn-block" onclick="apiBuy()" id="buyButton") Place Buy Offer
 				div(class="col")
-					button(type="button" class="btn btn-danger btn-block" onclick="apiSell()") Sell Offer
+					button(type="button" class="btn btn-danger btn-block" onclick="apiSell()" id="sellButton") Place Sell Offer
 				//div(class="col")
 					//button(type="button" class="btn btn-info btn-block" onclick="apiGetGraphData()") Test
 		div(class="row row-top-buffer")
@@ -67,6 +67,25 @@ block content
 			apiGetIndividual();
 		}, 5000);
 
+		function tempDisableBuy() {
+			let initialVal = document.getElementById("buyButton").innerHTML;
+			document.getElementById("buyButton").disabled = true;
+			document.getElementById("buyButton").innerHTML = "Placed...";
+			setTimeout(function () {
+				document.getElementById("buyButton").disabled = false;
+				document.getElementById("buyButton").innerHTML = initialVal;
+			}, 2000);
+		}
+
+		function tempDisableSell() {
+			let initialVal = document.getElementById("sellButton").innerHTML;
+			document.getElementById("sellButton").disabled = true;
+			document.getElementById("sellButton").innerHTML = "Placed...";
+			setTimeout(function () {
+				document.getElementById("sellButton").disabled = false;
+				document.getElementById("sellButton").innerHTML = initialVal;
+			}, 2000);
+		}
 
 		function draw(values) {
 			let graph = document.getElementById('graph');
@@ -155,6 +174,7 @@ block content
 			}).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
+					tempDisableBuy();
 				});
 			});
 		}
@@ -171,6 +191,7 @@ block content
 			}).then(function(response) {
 				response.text().then(function(data) {
 					console.log(data);
+					tempDisableSell();
 				});
 			});
 		}
