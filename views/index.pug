@@ -87,7 +87,10 @@ block content
 			}, 2000);
 		}
 
+		var graphData = null;
+
 		function draw(values) {
+			graphData = values
 			let graph = document.getElementById('graph');
 			Plotly.purge(graph);
 			//values = {
@@ -100,11 +103,11 @@ block content
 			//	decreasing: {line: {color: '#ef4545'}},
 			//	type: 'ohlc'
 			//};
-			values.increasing = {line: {color: '#2d7fc6'}};
-			values.decreasing = {line: {color: '#ef4545'}};
-			values.type = 'ohlc';
+			graphData.increasing = {line: {color: '#2d7fc6'}};
+			graphData.decreasing = {line: {color: '#ef4545'}};
+			graphData.type = 'ohlc';
 			Plotly.plot( graph,
-				[values],
+				[graphData],
 				{
 					margin: {
 						r: 0,
@@ -133,18 +136,9 @@ block content
 			values.increasing = {line: {color: '#2d7fc6'}};
 			values.decreasing = {line: {color: '#ef4545'}};
 			values.type = 'ohlc';
-			Plotly.update( graph,
-				[values],
-				{
-					margin: {
-						r: 0,
-						t: 0,
-						b: 0,
-						l: 0
-					},
-					showlegend: false
-				}
-			);
+			graphData = values;
+			console.log("Update");
+			Plotly.redraw( graph)
 		}
 
 		function logOut() {
