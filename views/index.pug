@@ -182,7 +182,7 @@ block content
 				response.text().then(function(data) {
 					let values = JSON.parse(data);
 					if(asUpdate) {
-						updateDraw(values);
+						draw(values);
 					} else {
 						draw(values);
 					}
